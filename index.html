@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>🍉 АРБУЗНАЯ МАТЕМАТИКА | Telegram Stars Shop</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1a472a 0%, #0a2a1a 100%);
+            font-family: 'Segoe UI', 'Poppins', 'Montserrat', system-ui, sans-serif;
+            padding: 16px;
+            position: relative;
+        }
+
+        /* анимированные арбузные полоски */
+        body::before {
+            content: "🍉";
+            font-size: 200px;
+            position: fixed;
+            bottom: -60px;
+            right: -60px;
+            opacity: 0.06;
+            pointer-events: none;
+            transform: rotate(-20deg);
+            animation: float 10s infinite ease-in-out;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: rotate(-20deg) translate(0, 0); }
+            50% { transform: rotate(-15deg) translate(-20px, -20px); }
+        }
+
+        .game-container {
+            max-width: 550px;
+            width: 100%;
+            margin: 0 auto;
+            background: rgba(20, 40, 20, 0.7);
+            backdrop-filter: blur(20px);
+            border-radius: 64px;
+            border: 2px solid #ffd966;
+            box-shadow: 0 30px 50px rgba(0,0,0,0.4), 0 0 0 3px #ffaa33 inset, 0 0 30px rgba(255,180,50,0.3);
+            padding: 20px 18px 28px;
+            transition: all 0.2s;
+        }
+
+        /* профиль и статистика */
+        .profile-bar {
+            background: #0a1f0ae6;
+            border-radius: 50px;
+            padding: 12px 20px;
+            margin-bottom: 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            border: 1px solid #ffcc77;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #00000055;
+            padding: 5px 15px;
+            border-radius: 40px;
+        }
+
+        .user-avatar {
+            font-size: 1.8rem;
+        }
+
+        .user-name {
+            font-weight: bold;
+            color: #ffec9f;
+            font-size: 0.9rem;
+        }
+
+        .stat-badge {
+            background: #1e3a1e;
+            padding: 5px 14px;
+            border-radius: 40px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: bold;
+        }
+
+        .stat-badge span:first-child { font-size: 0.75rem; color: #b8f2b0; }
+        .stat-badge span:last-child { font-size: 1.3rem; color: #ffec9f; }
+
+        /* игровое поле */
+        .math-card {
+            background: linear-gradient(145deg, #2a5a2a, #1a3a1a);
+            border-radius: 60px;
+            padding: 30px 20px;
+            text-align: center;
+            margin: 15px 0;
+            border: 1px solid #ffdd99;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.2), 0 10px 20px rgba(0,0,0,0.3);
+        }
+
+        .watermelon-emoji {
+            font-size: 4.5rem;
+            filter: drop-shadow(0 8px 12px rgba(0,0,0,0.4));
+            animation: bounce 0.5s ease;
+            display: inline-block;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .math-question {
+            font-size: 3.2rem;
+            font-weight: 800;
+            color: #fff5cc;
+            text-shadow: 0 2px 5px #1a3a1a;
+            letter-spacing: 4px;
+            background: #00000044;
+            padding: 10px 20px;
+            border-radius: 60px;
+            display: inline-block;
+            margin-top: 10px;
+        }
+
+        /* варианты ответов */
+        .answers-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 14px;
+            margin: 20px 0 15px;
+        }
+
+        .answer-btn {
+            background: radial-gradient(circle at 30% 20%, #ffb347, #d2691e);
+            border: none;
+            padding: 16px 8px;
+            border-radius: 60px;
+            font-size: 1.9rem;
+            font-weight: bold;
+            color: #2c1a0c;
+            cursor: pointer;
+            transition: 0.05s linear;
+            box-shadow: 0 6px 0 #7a3e0e;
+            font-family: monospace;
+            text-shadow: 0 1px 0 #ffdd99;
+        }
+
+        .answer-btn:active {
+            transform: translateY(3px);
+            box-shadow: 0 3px 0 #7a3e0e;
+        }
+
+        /* магазин звёзд */
+        .shop-panel {
+            background: #07200ed9;
+            border-radius: 48px;
+            padding: 16px;
+            margin: 15px 0 10px;
+            border: 1px solid #ffcc66;
+        }
+
+        .shop-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #ffe5a3;
+            margin-bottom: 12px;
+            padding-left: 8px;
+        }
+
+        .shop-items {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .shop-item {
+            background: #1f2e15e6;
+            border-radius: 50px;
+            padding: 8px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            border: 1px solid #ffaa55;
+            transition: 0.1s;
+        }
+
+        .item-details {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .item-name {
+            font-weight: bold;
+            color: #ffdd99;
+            font-size: 0.95rem;
+        }
+
+        .item-desc {
+            font-size: 0.65rem;
+            color: #c0e0b0;
+        }
+
+        .stars-cost {
+            background: #01010199;
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-weight: bold;
+            color: #ffd966;
+            font-size: 0.9rem;
+        }
+
+        .buy-star-btn {
+            background: linear-gradient(135deg, #f5b042, #e07c1f);
+            border: none;
+            padding: 8px 20px;
+            border-radius: 40px;
+            font-weight: bold;
+            color: #2a2a0a;
+            cursor: pointer;
+            transition: 0.1s;
+            font-size: 0.85rem;
+        }
+
+        .buy-star-btn:active { transform: scale(0.96); background: #ff9f2e; }
+        .buy-star-btn.disabled { opacity: 0.5; pointer-events: none; filter: grayscale(0.2); }
+
+        /* эффекты и нотификации */
+        .floating-text {
+            position: fixed;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #000000cc;
+            backdrop-filter: blur(8px);
+            padding: 8px 20px;
+            border-radius: 50px;
+            color: #ffec9f;
+            font-weight: bold;
+            z-index: 2000;
+            pointer-events: none;
+            font-size: 1rem;
+            animation: fadeUp 1s ease-out forwards;
+            white-space: nowrap;
+        }
+
+        @keyframes fadeUp {
+            0% { opacity: 1; bottom: 30%; }
+            100% { opacity: 0; bottom: 70%; }
+        }
+
+        .particle {
+            position: fixed;
+            pointer-events: none;
+            font-size: 1.8rem;
+            z-index: 1000;
+            animation: popFly 0.6s ease-out forwards;
+        }
+
+        @keyframes popFly {
+            0% { opacity: 1; transform: translate(0,0) scale(0.5);}
+            100% { opacity: 0; transform: translate(var(--dx, 40px), var(--dy, -100px)) scale(1.2);}
+        }
+
+        footer {
+            font-size: 0.6rem;
+            text-align: center;
+            color: #b8d9a6;
+            margin-top: 16px;
+        }
+
+        @media (max-width: 480px) {
+            .math-question { font-size: 2.2rem; letter-spacing: 2px; }
+            .answer-btn { font-size: 1.4rem; padding: 12px; }
+            .stat-badge span:last-child { font-size: 1.1rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="game-container">
+    <!-- Верхняя панель -->
+    <div class="profile-bar">
+        <div class="user-info">
+            <div class="user-avatar" id="userAvatar">🍉</div>
+            <div class="user-name" id="userName">Игрок</div>
+        </div>
+        <div style="display: flex; gap: 8px;">
+            <div class="stat-badge"><span>🍉</span><span id="watermelonScore">0</span></div>
+            <div class="stat-badge"><span>⭐</span><span id="starBalance">0</span></div>
+            <div class="stat-badge"><span>🏆</span><span id="highScore">0</span></div>
+        </div>
+    </div>
+
+    <!-- Игровая механика -->
+    <div class="math-card">
+        <div class="watermelon-emoji" id="watermelonEmoji">🍉✨</div>
+        <div class="math-question" id="mathQuestion">2 + 2 = ?</div>
+    </div>
+    <div class="answers-grid" id="answersContainer"></div>
+
+    <!-- Магазин за Telegram Stars (реальные покупки) -->
+    <div class="shop-panel">
+        <div class="shop-header">
+            <span>⭐ МАГАЗИН TELEGRAM STARS</span>
+            <span style="font-size:0.7rem;">💎 реальные Stars</span>
+        </div>
+        <div class="shop-items" id="shopList"></div>
+        <div style="font-size:0.65rem; margin-top: 12px; text-align:center; color:#ffdd99;">
+            🔥 Покупай бусты за настоящие Stars — поддержка разработчика!
+        </div>
+    </div>
+    <footer>🍉 Решай примеры → получай арбузы → покупай усиления. Звёзды списываются с Telegram-кошелька.</footer>
+</div>
+
+<script>
+    // ===================== АРБУЗНАЯ МАТЕМАТИКА + ИНТЕГРАЦИЯ С БОТОМ (TELEGRAM STARS) =====================
+    
+    // Игровые переменные
+    let watermelons = 0;
+    let starBalance = 0;        // отображаемый баланс (приходит от бота)
+    let multiplier = 1.0;
+    let highScore = 0;
+    let userId = null;
+    let userName = "Игрок";
+    
+    // Текущий вопрос
+    let currentQuestion = null;
+    let currentAnswers = [];
+    let currentCorrect = null;
+    
+    // Telegram WebApp объект
+    const tg = window.Telegram?.WebApp;
+    
+    // Элементы DOM
+    const watermelonSpan = document.getElementById('watermelonScore');
+    const starSpan = document.getElementById('starBalance');
+    const highSpan = document.getElementById('highScore');
+    const mathDiv = document.getElementById('mathQuestion');
+    const answersContainer = document.getElementById('answersContainer');
+    const watermelonEmoji = document.getElementById('watermelonEmoji');
+    const userNameSpan = document.getElementById('userName');
+    
+    // ========== ИНИЦИАЛИЗАЦИЯ TELEGRAM ==========
+    function initTelegram() {
+        if (tg) {
+            tg.ready();
+            tg.expand();
+            const user = tg.initDataUnsafe?.user;
+            if (user) {
+                userId = user.id;
+                userName = user.first_name || user.username || "Игрок";
+                userNameSpan.innerText = userName.slice(0, 15);
+            }
+            // Получаем данные о пользователе от бота (через WebApp)
+            if (tg.initDataUnsafe?.start_param) {
+                // можно обработать рефералов
+            }
+            // Отправляем событие готовности
+            tg.sendData(JSON.stringify({ event: 'game_ready', userId: userId }));
+        } else {
+            // Демо-режим (вне Telegram)
+            userId = Math.floor(Math.random() * 10000);
+            userName = "Тестер";
+            userNameSpan.innerText = "Тестер 🍉";
+        }
+    }
+    
+    // ========== ГЕНЕРАЦИЯ ПРИМЕРОВ (сложность от арбузов) ==========
+    function generateMathQuestion() {
+        let difficulty = Math.min(8 + Math.floor(watermelons / 400), 35);
+        let type = Math.floor(Math.random() * 4);
+        let a, b, answer, expr;
+        
+        if (type === 0) { // сложение
+            a = Math.floor(Math.random() * (difficulty + 8)) + 2;
+            b = Math.floor(Math.random() * (difficulty + 8)) + 1;
+            answer = a + b;
+            expr = `${a} + ${b}`;
+        } else if (type === 1) { // вычитание
+            a = Math.floor(Math.random() * (difficulty + 12)) + 6;
+            b = Math.floor(Math.random() * (a - 1)) + 1;
+            answer = a - b;
+            expr = `${a} - ${b}`;
+        } else if (type === 2) { // умножение
+            let maxFact = Math.min(12, Math.floor(difficulty / 2) + 3);
+            a = Math.floor(Math.random() * maxFact) + 2;
+            b = Math.floor(Math.random() * maxFact) + 2;
+            answer = a * b;
+            expr = `${a} × ${b}`;
+        } else {
+            a = Math.floor(Math.random() * (difficulty + 6)) + 10;
+            b = Math.floor(Math.random() * Math.floor(a / 2)) + 2;
+            answer = a + b;
+            expr = `${a} + ${b}`;
+        }
+        
+        // Генерация вариантов
+        let options = new Set();
+        options.add(answer);
+        while (options.size < 4) {
+            let offset = Math.floor(Math.random() * (Math.max(5, Math.floor(answer / 3)) + 4)) + 1;
+            let variant = answer + (Math.random() > 0.5 ? offset : -offset);
+            if (variant < 0) variant = answer + offset;
+            if (variant !== answer) options.add(variant);
+        }
+        let answersArr = Array.from(options);
+        for (let i = answersArr.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [answersArr[i], answersArr[j]] = [answersArr[j], answersArr[i]];
+        }
+        
+        currentQuestion = expr;
+        currentAnswers = answersArr;
+        currentCorrect = answer;
+        mathDiv.innerText = expr + " = ?";
+        renderAnswers();
+    }
+    
+    function renderAnswers() {
+        answersContainer.innerHTML = '';
+        currentAnswers.forEach(ans => {
+            const btn = document.createElement('button');
+            btn.className = 'answer-btn';
+            btn.innerText = ans;
+            btn.addEventListener('click', () => checkAnswer(ans));
+            answersContainer.appendChild(btn);
+        });
+    }
+    
+    // Проверка ответа и начисление арбузов
+    function checkAnswer(selected) {
+        if (selected === currentCorrect) {
+            let gain = Math.floor(10 * multiplier);
+            watermelons += gain;
+            // анимация
+            watermelonEmoji.style.animation = 'none';
+            setTimeout(() => { watermelonEmoji.style.animation = ''; }, 10);
+            spawnParticleEffect(`+${gain} 🍉`, '#b8ffa8');
+            if (watermelons > highScore) {
+                highScore = watermelons;
+                updateUI();
+                saveLocalData();
+            }
+            updateUI();
+            generateMathQuestion();
+            syncToBot(); // синхронизация с ботом
+        } else {
+            watermelons = Math.max(0, watermelons - 3);
+            spawnParticleEffect(`-3 🍉 Ошибка!`, '#ffaa88');
+            updateUI();
+            generateMathQuestion();
+            syncToBot();
+            if (tg?.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
+            else if (navigator.vibrate) navigator.vibrate(50);
+        }
+        if (tg?.HapticFeedback && selected === currentCorrect) tg.HapticFeedback.notificationOccurred('success');
+        updateUI();
+    }
+    
+    // Эффекты частиц
+    function spawnParticleEffect(text, color) {
+        const div = document.createElement('div');
+        div.innerText = text;
+        div.className = 'floating-text';
+        div.style.color = color;
+        div.style.background = '#000000aa';
+        document.body.appendChild(div);
+        setTimeout(() => div.remove(), 1000);
+    }
+    
+    // ========== МАГАЗИН ЗА TELEGRAM STARS (РЕАЛЬНЫЕ ПОКУПКИ ЧЕРЕЗ БОТА) ==========
+    // Товары (id, название, описание, цена Stars, payload для бота)
+    const shopCatalog = [
+        { id: 'boost_50', name: "🍉 Маленький буст", desc: "+50 арбузов мгновенно", price: 5, payload: "boost_50" },
+        { id: 'boost_200', name: "🍉 Большой буст", desc: "+200 арбузов", price: 15, payload: "boost_200" },
+        { id: 'boost_1000', name: "🍉 Мега буст", desc: "+1000 арбузов!", price: 60, payload: "boost_1000" },
+        { id: 'multiplier_x2', name: "✨ Множитель x2", desc: "Навсегда удваивает арбузы", price: 25, payload: "multiplier_2" },
+        { id: 'multiplier_x3', name: "🔥 Множитель x3", desc: "Утраивает весь доход", price: 60, payload: "multiplier_3" }
+    ];
+    
+    function renderShop() {
+        const shopContainer = document.getElementById('shopList');
+        shopContainer.innerHTML = '';
+        shopCatalog.forEach(item => {
+            const div = document.createElement('div');
+            div.className = 'shop-item';
+            div.innerHTML = `
+                <div class="item-details">
+                    <div class="item-name">${item.name}</div>
+                    <div class="item-desc">${item.desc}</div>
+                </div>
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <span class="stars-cost">⭐ ${item.price}</span>
+                    <button class="buy-star-btn" data-id="${item.id}">Купить</button>
+                </div>
+            `;
+            const btn = div.querySelector('.buy-star-btn');
+            btn.addEventListener('click', () => purchaseStarsItem(item));
+            shopContainer.appendChild(div);
+        });
+    }
+    
+    // Покупка через Telegram Stars (вызов инвойса через бота)
+    function purchaseStarsItem(item) {
+        if (!tg) {
+            spawnParticleEffect("⭐ Работает только в Telegram!", "#ffaa88");
+            return;
+        }
+        // Отправляем запрос боту на создание инвойса
+        // Для этого используем tg.sendData — бот получит сообщение и ответит платежом
+        const purchaseRequest = {
+            event: 'purchase',
+            item_id: item.id,
+            price_stars: item.price,
+            payload: item.payload
+        };
+        tg.sendData(JSON.stringify(purchaseRequest));
+        spawnParticleEffect(`⭐ Запрос на покупку ${item.name}`, "#ffe5a3");
+        // В реальном боте после successful_payment придёт обновление данных
+    }
+    
+    // Синхронизация с ботом (отправка нового баланса арбузов)
+    function syncToBot() {
+        if (!tg) return;
+        const gameData = {
+            event: 'sync',
+            watermelons: Math.floor(watermelons),
+            multiplier: multiplier,
+            user_id: userId
+        };
+        tg.sendData(JSON.stringify(gameData));
+    }
+    
+    // Обновление данных от бота (через WebApp)
+    function handleBotUpdate(data) {
+        if (data.watermelons !== undefined) watermelons = data.watermelons;
+        if (data.stars_balance !== undefined) starBalance = data.stars_balance;
+        if (data.multiplier !== undefined) multiplier = data.multiplier;
+        if (data.highScore !== undefined) highScore = data.highScore;
+        updateUI();
+        generateMathQuestion();
+        saveLocalData();
+    }
+    
+    // Сохранение локально
+    function saveLocalData() {
+        const save = {
+            watermelons: watermelons,
+            highScore: highScore,
+            multiplier: multiplier
+        };
+        localStorage.setItem('watermelon_math_local', JSON.stringify(save));
+    }
+    
+    function loadLocalData() {
+        const saved = localStorage.getItem('watermelon_math_local');
+        if (saved) {
+            try {
+                const data = JSON.parse(saved);
+                watermelons = data.watermelons || 0;
+                highScore = data.highScore || 0;
+                multiplier = data.multiplier || 1;
+            } catch(e) {}
+        }
+        updateUI();
+        generateMathQuestion();
+    }
+    
+    function updateUI() {
+        watermelonSpan.innerText = Math.floor(watermelons);
